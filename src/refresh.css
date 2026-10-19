@@ -80,3 +80,25 @@ input::placeholder, textarea::placeholder { color: var(--ties-muted); }
 @media (prefers-reduced-motion: reduce) {
   *, *::before, *::after { scroll-behavior: auto !important; animation-duration: .01ms !important; animation-iteration-count: 1 !important; transition-duration: .01ms !important; }
 }
+
+/* Theme-aware surfaces and contrast fixes for the legacy utility classes. */
+html.dark .bg-white,
+html.dark .bg-white\/80,
+html.dark .bg-white\/90 { background-color: rgba(16,24,42,.82); }
+html.dark .bg-gray-50,
+html.dark .bg-gray-100,
+html.dark .bg-slate-50,
+html.dark .bg-slate-100 { background-color: rgba(16,24,42,.62); }
+html.dark .text-gray-900,
+html.dark .text-gray-800,
+html.dark .text-slate-900,
+html.dark .text-slate-800 { color: var(--ties-text); }
+html.dark .text-gray-700,
+html.dark .text-slate-700 { color: #c0cbe0; }
+html.dark .border-gray-100,
+html.dark .border-gray-200,
+html.dark .border-slate-100,
+html.dark .border-slate-200 { border-color: var(--ties-line); }
+html.dark .shadow-lg,
+html.dark .shadow-xl,
+html.dark .shadow-2xl { box-shadow: var(--ties-shadow); }
