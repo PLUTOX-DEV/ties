@@ -30,7 +30,9 @@ const allowedOrigins = [
   "https://tiesdao-websitexr.vercel.app",
   "https://tiesdao.vercel.app",
   process.env.FRONTEND_URL,
-].filter(Boolean);
+].filter(Boolean).map((value) => {
+  try { return new URL(value).origin; } catch { return value; }
+});
 
 const isAllowedOrigin = (origin) => {
   if (!origin) return true;
@@ -44,7 +46,7 @@ const isAllowedOrigin = (origin) => {
       hostname === "127.0.0.1" ||
       hostname === "tiesdao.com" ||
       hostname === "www.tiesdao.com" ||
-      hostname.endsWith(".vercel.app")
+      false
     );
   } catch {
     return false;
@@ -63,7 +65,7 @@ app.use(cors({
   methods: ["GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"],
   allowedHeaders: ["Content-Type", "Authorization"],
 }));
-app.use(express.json());
+app.use(express.json({ limit: "1mb" }));
 
 // ✅ MongoDB Connection
 let mongoConnected = false;
@@ -283,8 +285,8 @@ app.use((req, res) => {
 app.use((err, req, res, next) => {
   console.error("Global error handler:", err);
   res.status(err.status || 500).json({ 
-    message: err.message || "Server error",
-    error: process.env.NODE_ENV === "development" ? err : undefined
+    message: err.status && err.status < 500 ? err.message : "Internal server error",
+    error: process.env.NODE_ENV === "development" ? err.message : undefined
   });
 });
 
