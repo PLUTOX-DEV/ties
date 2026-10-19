@@ -1,0 +1,28 @@
+name: CI
+
+on:
+  push:
+    branches: [main, tiesdao-full-overhaul]
+  pull_request:
+    branches: [main, tiesdao-full-overhaul]
+
+jobs:
+  build-and-check:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+      - name: Install frontend dependencies
+        run: npm ci
+      - name: Build frontend
+        run: npm run build
+      - name: Install backend dependencies
+        run: npm ci
+        working-directory: server
+      - name: Syntax-check backend JavaScript
+        run: find server -type f -name '*.js' -not -path '*/node_modules/*' -print0 | xargs -0 -n1 node --check
