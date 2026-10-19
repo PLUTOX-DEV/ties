@@ -1,0 +1,67 @@
+/* TIES DAO visual refresh — accessible, responsive design layer */
+:root {
+  color-scheme: dark;
+  --ties-bg: #070b14;
+  --ties-panel: rgba(16, 24, 42, .78);
+  --ties-panel-solid: #10182a;
+  --ties-line: rgba(148, 163, 184, .16);
+  --ties-text: #f4f7ff;
+  --ties-muted: #9aa8c0;
+  --ties-accent: #72e5c2;
+  --ties-accent-2: #8ca8ff;
+  --ties-radius: 20px;
+  --ties-shadow: 0 22px 70px rgba(0,0,0,.28);
+}
+html { scroll-behavior: smooth; scroll-padding-top: 90px; }
+body {
+  background:
+    radial-gradient(ellipse at 8% 0%, rgba(53, 107, 161, .18), transparent 38rem),
+    radial-gradient(ellipse at 95% 12%, rgba(66, 194, 164, .10), transparent 32rem),
+    var(--ties-bg);
+  color: var(--ties-text);
+  font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  -webkit-font-smoothing: antialiased;
+}
+*, *::before, *::after { box-sizing: border-box; }
+img, video, canvas, svg { max-width: 100%; }
+img { height: auto; }
+a { color: inherit; text-underline-offset: 4px; }
+button, input, textarea, select { font: inherit; }
+button, [role="button"], a { -webkit-tap-highlight-color: transparent; }
+button { cursor: pointer; transition: transform .2s ease, border-color .2s ease, background .2s ease; }
+button:hover { transform: translateY(-1px); }
+button:focus-visible, a:focus-visible, input:focus-visible, textarea:focus-visible, select:focus-visible {
+  outline: 3px solid rgba(114,229,194,.8); outline-offset: 3px;
+}
+::selection { color: #06120f; background: var(--ties-accent); }
+section { scroll-margin-top: 88px; }
+nav, header { backdrop-filter: blur(18px); }
+main { min-width: 0; }
+h1, h2, h3, h4 { letter-spacing: -.035em; text-wrap: balance; }
+p { line-height: 1.7; }
+a, button, input, textarea, select { transition-duration: .18s; }
+input, textarea, select {
+  max-width: 100%; color: var(--ties-text); background: rgba(6, 12, 25, .72);
+  border: 1px solid var(--ties-line); border-radius: 12px; padding: .8rem .95rem;
+}
+input::placeholder, textarea::placeholder { color: #7887a1; }
+button { border-radius: 12px; }
+[class*="card"], [class*="Card"], [class*="panel"], [class*="Panel"] {
+  min-width: 0; overflow-wrap: anywhere;
+}
+@media (min-width: 768px) {
+  .container, [class*="container"], [class*="Container"] { max-width: min(1200px, calc(100% - 48px)); }
+}
+@media (max-width: 767px) {
+  html { scroll-padding-top: 72px; }
+  body { overflow-x: clip; }
+  h1 { font-size: clamp(2.15rem, 10vw, 3.7rem); }
+  h2 { font-size: clamp(1.7rem, 7vw, 2.7rem); }
+  section { scroll-margin-top: 72px; }
+  input, textarea, select { width: 100%; min-width: 0; }
+  table { display: block; max-width: 100%; overflow-x: auto; white-space: nowrap; }
+  [class*="grid-cols-"] { grid-template-columns: minmax(0, 1fr); }
+}
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after { scroll-behavior: auto !important; animation-duration: .01ms !important; animation-iteration-count: 1 !important; transition-duration: .01ms !important; }
+}
