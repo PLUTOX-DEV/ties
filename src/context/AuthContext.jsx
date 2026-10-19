@@ -1,52 +1,49 @@
-import { createContext, useContext, useEffect, useState } from "react";
-import { supabase } from "../lib/supabase";
+import { createContext, useContext, useEffect, useMemo, useState } from "react";
 
-const AuthContext = createContext();
+const AuthContext = createContext(null);
 
-export function AuthProvider({ children }) {
-  const [user, setUser] = useState(null);       // now exposed
-  const [session, setSession] = useState(null);
-  const [loading, setLoading] = useState(true);
-
-  useEffect(() => {
-    // 1️⃣ Get current session
-    supabase.auth.getSession().then(({ data }) => {
-      setSession(data.session ?? null);
-      setUser(data.session?.user ?? null);
-      setLoading(false);
-    });
-
-    // 2️⃣ Listen for auth state changes
-    const { data: listener } = supabase.auth.onAuthStateChange(
-      async (_, session) => {
-        setSession(session ?? null);
-        setUser(session?.user ?? null);
-
-        // Fetch username from profiles if logged in
-        if (session?.user) {
-          const { data: profileData } = await supabase
-            .from("profiles")
-            .select("username")
-            .eq("id", session.user.id)
-            .maybeSingle();
-
-          setUser((prev) => ({
-            ...prev,
-            username: profileData?.username || null,
-          }));
-        }
-      }
-    );
-
-    return () => listener.subscription.unsubscribe();
-  }, []);
-
-  return (
-    <AuthContext.Provider value={{ user, setUser, session, loading }}>
-      {children}
-    </AuthContext.Provider>
-  );
+function readStoredUser() {
+  if (typeof window === "undefined") return null;
+  try {
+    if (!window.localStorage.getItem("token")) return null;
+    const raw = window.localStorage.getItem("ties-user");
+    return raw ? JSON.parse(raw) : null;
+  } catch {
+    return null;
+  }
 }
 
-// Custom hook to access auth context
-export const useAuth = () => useContext(AuthContext);
+export function AuthProvider({ children }) {
+  const [user, setUser] = useState(readStoredUser);
+  const [loading] = useState(false);
+
+  useEffect(() => {
+    try {
+      if (user && window.localStorage.getItem("token")) {
+        window.localStorage.setItem("ties-user", JSON.stringify(user));
+      } else {
+        window.localStorage.removeItem("ties-user");
+      }
+    } catch {
+      // Authentication state remains usable for the current page session.
+    }
+  }, [user]);
+
+  useEffect(() => {
+    const syncFromStorage = () => setUser(readStoredUser());
+    window.addEventListener("storage", syncFromStorage);
+    return () => window.removeEventListener("storage", syncFromStorage);
+  }, []);
+
+  const value = useMemo(() => ({ user, setUser, loading }), [user, loading]);
+
+  return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
+}
+
+export function useAuth() {
+  const context = useContext(AuthContext);
+  if (!context) throw new Error("useAuth must be used inside an AuthProvider");
+  return context;
+}
+
+export default AuthContext;
